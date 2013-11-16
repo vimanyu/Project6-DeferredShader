@@ -63,6 +63,41 @@ float getRandomScalar(vec2 texcoords) {
                 texcoords.t*u_ScreenHeight/sz.y)).r;
 }
 
+//float calculateOcclusionFactor()
+//{
+//	vec3 rvec = getRandomNormal(fs_Texcoord);
+//	rvec = vec3( rvec.z, rvec.y,0.0);
+//	vec3 normal = sampleNrm(fs_Texcoord);
+//	vec3 tangent = normalize( (rvec - normal )* dot(rvec, normal));
+//	vec3 bitangent = cross(normal, tangent);
+//	mat3 tbn = mat3(tangent, bitangent, normal);
+//	float occlusion = 0.0;
+//	vec3 origin = samplePos(fs_Texcoord);
+//	float uRadius = 0.3;
+//
+//	for (int i = 0; i < 16; ++i) {
+//		// get sample position:
+//		//vec3 sample = tbn * poissonSphere[i];
+//		vec3 sample = poissonSphere[i] * uRadius + origin;
+//  
+//		// project sample position:
+//		vec4 offset = vec4(sample, 1.0);
+//		offset = u_Persp * offset;
+//		offset.xy /= offset.w;
+//		offset.xy = offset.xy * 0.5 + 0.5;
+//  
+//		// get sample depth:
+//		float sampleDepth = texture(u_Depthtex, offset.xy).r;
+//		//float sampleDepth = linearizeDepth(exp_depth,u_Near,u_Far);
+//  
+//		// range check & accumulate:
+//		float rangeCheck= abs(origin.z - sampleDepth) < uRadius ? 1.0 : 0.0;
+//		occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) * rangeCheck;
+//		}
+//	 occlusion/=16.0;
+//	 return occlusion;
+//}
+
 ///////////////////////////////////
 // MAIN
 //////////////////////////////////

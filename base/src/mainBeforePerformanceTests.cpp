@@ -213,7 +213,7 @@ GLuint depthTexture = 0;
 GLuint normalTexture = 0;
 GLuint positionTexture = 0;
 GLuint colorTexture = 0;
-//GLuint shininessTexture = 0;
+GLuint shininessTexture = 0;
 GLuint postTexture = 0;
 GLuint bloomPass1Texture= 0;
 GLuint FBO[3] = {0, 0, 0};
@@ -328,8 +328,9 @@ void freeFBO() {
     glDeleteTextures(1,&positionTexture);
     glDeleteTextures(1,&colorTexture);
     glDeleteTextures(1,&postTexture);
-	//glDeleteTextures(1,&shininessTexture);
+	glDeleteTextures(1,&shininessTexture);
 	glDeleteTextures(1,&bloomPass1Texture);
+	glDeleteTextures(1,&shininessTexture);
     glDeleteFramebuffers(1,&FBO[0]);
     glDeleteFramebuffers(1,&FBO[1]);
 	glDeleteFramebuffers(1,&FBO[2]);
@@ -402,7 +403,7 @@ void initFBO(int w, int h) {
     glGenTextures(1, &normalTexture);
     glGenTextures(1, &positionTexture);
     glGenTextures(1, &colorTexture);
-	//glGenTextures(1, &shininessTexture);
+	glGenTextures(1, &shininessTexture);
 
     //Set up depth FBO
     glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -444,19 +445,20 @@ void initFBO(int w, int h) {
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB32F , w, h, 0, GL_RGBA, GL_FLOAT,0);
 
 
- //   //Set up shininess FBO
- //   glBindTexture(GL_TEXTURE_2D, shininessTexture);
+    //Set up shininess FBO
+    glBindTexture(GL_TEXTURE_2D, shininessTexture);
 
- //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
- //   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
- //   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-	//glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_FLOAT,0);
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_FLOAT,0);
 
 
     // creatwwe a framebuffer object
@@ -468,13 +470,13 @@ void initFBO(int w, int h) {
     GLint normal_loc = glGetFragDataLocation(pass_prog,"out_Normal");
     GLint position_loc = glGetFragDataLocation(pass_prog,"out_Position");
     GLint color_loc = glGetFragDataLocation(pass_prog,"out_Color");
-	//GLint shininess_loc = glGetFragDataLocation(pass_prog,"out_Shininess");
+	GLint shininess_loc = glGetFragDataLocation(pass_prog,"out_Shininess");
     GLenum draws [4];
     draws[normal_loc] = GL_COLOR_ATTACHMENT0;
     draws[position_loc] = GL_COLOR_ATTACHMENT1;
     draws[color_loc] = GL_COLOR_ATTACHMENT2;
-	//draws[shininess_loc] = GL_COLOR_ATTACHMENT3;
-    glDrawBuffers(3, draws);
+	draws[shininess_loc] = GL_COLOR_ATTACHMENT3;
+    glDrawBuffers(4, draws);
 
     // attach the texture to FBO depth attachment point
     int test = GL_COLOR_ATTACHMENT0;
@@ -486,8 +488,8 @@ void initFBO(int w, int h) {
     glFramebufferTexture(GL_FRAMEBUFFER, draws[position_loc], positionTexture, 0);
     glBindTexture(GL_TEXTURE_2D, colorTexture);    
     glFramebufferTexture(GL_FRAMEBUFFER, draws[color_loc], colorTexture, 0);
-    //glBindTexture(GL_TEXTURE_2D, shininessTexture);    
-    //glFramebufferTexture(GL_FRAMEBUFFER, draws[shininess_loc], shininessTexture, 0);
+    glBindTexture(GL_TEXTURE_2D, shininessTexture);    
+    glFramebufferTexture(GL_FRAMEBUFFER, draws[shininess_loc], shininessTexture, 0);
 
     // check FBO status
     FBOstatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -726,9 +728,9 @@ void setup_quad(GLuint prog)
     glBindTexture(GL_TEXTURE_2D, random_scalar_tex);
     glUniform1i(glGetUniformLocation(prog, "u_RandomScalartex"),5);
 
-    //glActiveTexture(GL_TEXTURE6);
-    //glBindTexture(GL_TEXTURE_2D, shininessTexture);
-    //glUniform1i(glGetUniformLocation(prog, "u_Shininesstex"),6);
+    glActiveTexture(GL_TEXTURE6);
+    glBindTexture(GL_TEXTURE_2D, shininessTexture);
+    glUniform1i(glGetUniformLocation(prog, "u_Shininesstex"),6);
 
 }
 
@@ -904,9 +906,9 @@ void display(void)
 	glBindTexture(GL_TEXTURE_2D, postTexture);
     glUniform1i(glGetUniformLocation(bloom_prog, "u_Posttex"),0);
     
-	//glActiveTexture(GL_TEXTURE6);
- //   glBindTexture(GL_TEXTURE_2D, shininessTexture);
- //   glUniform1i(glGetUniformLocation(bloom_prog, "u_Shininesstex"),6); 
+	glActiveTexture(GL_TEXTURE6);
+    glBindTexture(GL_TEXTURE_2D, shininessTexture);
+    glUniform1i(glGetUniformLocation(bloom_prog, "u_Shininesstex"),6); 
     
 	glUniform1i(glGetUniformLocation(bloom_prog, "u_ScreenHeight"), height);
     glUniform1i(glGetUniformLocation(bloom_prog, "u_ScreenWidth"), width);
@@ -1092,8 +1094,8 @@ void initLights()
 			l.pos = glm::vec3(min,-i,j);
 			lights.push_back(l);
 
-			l.pos = glm::vec3(max,-i,j);
-			lights.push_back(l);
+			//l.pos = glm::vec3(max,-i,j);
+			//lights.push_back(l);
 
 
 			//l.pos = glm::vec3(i,-min,j);
@@ -1104,11 +1106,11 @@ void initLights()
 			lights.push_back(l);
 		}
 
-		//light_t l;
-		//l.pos = glm::vec3(4.0,-4.0,3.0);
-		//l.radius = 2.0f;
-		//l.strength = 1.0;
-		//lights.push_back(l);
+		light_t l;
+		l.pos = glm::vec3(4.0,-4.0,3.0);
+		l.radius = 2.0f;
+		l.strength = 1.0;
+		lights.push_back(l);
 }
 
 int main (int argc, char* argv[])

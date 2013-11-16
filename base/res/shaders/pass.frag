@@ -10,12 +10,15 @@ in vec4 fs_Position;
 out vec4 out_Normal;
 out vec4 out_Position;
 out vec4 out_Color;
-out float out_Shininess;
+//out float out_Shininess;
 
 void main(void)
 {
-    out_Normal = vec4(normalize(fs_Normal),0.0f);
+	vec3 n = normalize(fs_Normal);
+	out_Normal = vec4( n.x,n.y,u_Shininess,0.0f);
+	//Performance Testing
+    //out_Normal = vec4(normalize(fs_Normal),0.0f);
     out_Position = vec4(fs_Position.xyz,1.0f); //Tuck position into 0 1 range
     out_Color = vec4(u_Color,1.0);
-	out_Shininess = u_Shininess;
+	//out_Shininess = u_Shininess;
 }

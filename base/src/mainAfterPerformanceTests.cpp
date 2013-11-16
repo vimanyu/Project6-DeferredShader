@@ -1092,8 +1092,8 @@ void initLights()
 			l.pos = glm::vec3(min,-i,j);
 			lights.push_back(l);
 
-			l.pos = glm::vec3(max,-i,j);
-			lights.push_back(l);
+			//l.pos = glm::vec3(max,-i,j);
+			//lights.push_back(l);
 
 
 			//l.pos = glm::vec3(i,-min,j);
@@ -1104,11 +1104,11 @@ void initLights()
 			lights.push_back(l);
 		}
 
-		//light_t l;
-		//l.pos = glm::vec3(4.0,-4.0,3.0);
-		//l.radius = 2.0f;
-		//l.strength = 1.0;
-		//lights.push_back(l);
+		light_t l;
+		l.pos = glm::vec3(4.0,-4.0,3.0);
+		l.radius = 2.0f;
+		l.strength = 1.0;
+		lights.push_back(l);
 }
 
 int main (int argc, char* argv[])
